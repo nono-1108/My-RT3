@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model auditlog {
+  id        String    @id @default(uuid()) @db.VarChar(36)
+  userId    String    @db.VarChar(36)
+  action    String    @db.VarChar(50)
+  entity    String    @db.VarChar(50)
+  entityId  String    @db.VarChar(36)
+  details   String?   @db.Text
+  timestamp DateTime? @default(now()) @db.DateTime(0)
+}
+
+model kategoripemasukan {
+  id        String      @id @default(uuid()) @db.VarChar(36)
+  nama      String      @db.VarChar(100)
+  deskripsi String?     @db.Text
+  pemasukan pemasukan[]
+}
+
+model kategoripengeluaran {
+  id          String        @id @default(uuid()) @db.VarChar(36)
+  nama        String        @db.VarChar(100)
+  deskripsi   String?       @db.Text
+  pengeluaran pengeluaran[]
+}
+
+model pemasukan {
+  id                String            @id @default(uuid()) @db.VarChar(36)
+  no_transaksi      String            @unique(map: "no_transaksi") @db.VarChar(50)
+  tanggal           DateTime          @db.DateTime(0)
+  nominal           Decimal           @db.Decimal(15, 2)
+  keterangan        String?           @db.Text
+  bukti_pembayaran  String?           @db.VarChar(255)
+  wargaId           String?           @db.VarChar(36)
+  kategoriId        String            @db.VarChar(36)
+  createdById       String?           @db.VarChar(36)
+  warga             warga?            @relation(fields: [wargaId], references: [id], onUpdate: Restrict, map: "pemasukan_ibfk_1")
+  kategoripemasukan kategoripemasukan @relation(fields: [kategoriId], references: [id], onUpdate: Restrict, map: "pemasukan_ibfk_2")
+  tagihaniuran      tagihaniuran[]
+
+  @@index([kategoriId], map: "kategoriId")
+  @@index([wargaId], map: "wargaId")
+}
+
+model pengeluaran {
+  id                  String              @id @default(uuid()) @db.VarChar(36)
+  no_pengeluaran      String              @unique(map: "no_pengeluaran") @db.VarChar(50)
+  tanggal             DateTime            @db.DateTime(0)
+  nominal             Decimal             @db.Decimal(15, 2)
+  deskripsi           String?             @db.Text
+  penerima            String              @db.VarChar(150)
+  bukti_nota          String?             @db.VarChar(255)
+  kategoriId          String              @db.VarChar(36)
+  createdById         String?             @db.VarChar(36)
+  kategoripengeluaran kategoripengeluaran @relation(fields: [kategoriId], references: [id], onUpdate: Restrict, map: "pengeluaran_ibfk_1")
+
+  @@index([kategoriId], map: "kategoriId")
+}
+
+model tagihaniuran {
+  id            String     @id @default(uuid()) @db.VarChar(36)
+  bulan         Int
+  tahun         Int
+  nominal       Decimal    @db.Decimal(15, 2)
+  status        String?    @default("BELUM_LUNAS") @db.VarChar(20)
+  tanggal_bayar DateTime?  @db.DateTime(0)
+  wargaId       String     @db.VarChar(36)
+  pemasukanId   String?    @db.VarChar(36)
+  warga         warga      @relation(fields: [wargaId], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "tagihaniuran_ibfk_1")
+  pemasukan     pemasukan? @relation(fields: [pemasukanId], references: [id], onUpdate: Restrict, map: "tagihaniuran_ibfk_2")
+
+  @@index([pemasukanId], map: "pemasukanId")
+  @@index([wargaId], map: "wargaId")
+}
+
+model user {
+  id           String      @id @default(uuid()) @db.VarChar(36)
+  username     String      @unique(map: "username") @db.VarChar(100)
+  password     String      @db.VarChar(255)
+  nama         String      @db.VarChar(150)
+  role         String      @db.VarChar(50)
+  access_level String?     @default("WRITE") @db.VarChar(20)
+  status       Boolean?    @default(true)
+  warga        warga[]
+}
+
+model warga {
+  id           String         @id @default(uuid()) @db.VarChar(36)
+  nik          String         @unique(map: "nik") @db.VarChar(16)
+  no_kk        String         @db.VarChar(16)
+  nama_lengkap String         @db.VarChar(150)
+  alamat       String?        @db.Text
+  rt           String?        @db.VarChar(5)
+  rw           String?        @db.VarChar(5)
+  no_rumah     String?        @db.VarChar(10)
+  no_telp      String?        @db.VarChar(20)
+  status_aktif String?        @default("AKTIF") @db.VarChar(20)
+  userId       String?        @db.VarChar(36)
+  pemasukan    pemasukan[]
+  tagihaniuran tagihaniuran[]
+  user         user?          @relation(fields: [userId], references: [id], onUpdate: Restrict, map: "warga_ibfk_1")
+
+  @@index([userId], map: "userId")
+}
+
+model saldoawal {
+  id            String    @id @default(uuid()) @db.VarChar(36)
+  periode       String    @unique @db.VarChar(50)
+  saldo_awal    Decimal   @db.Decimal(15, 2)
+  keterangan    String?   @db.Text
+  tanggal_input DateTime? @default(now()) @db.DateTime(0)
+  createdById   String?   @db.VarChar(36)
+}

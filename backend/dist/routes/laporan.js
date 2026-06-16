@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const laporan_1 = require("../controllers/laporan");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.get('/excel', laporan_1.exportLaporanKasExcel);
+router.get('/pdf', laporan_1.exportLaporanKasPDF);
+router.get('/kumulatif', laporan_1.getLaporanKumulatif);
+router.get('/bulanan', laporan_1.getLaporanBulanan);
+exports.default = router;

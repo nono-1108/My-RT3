@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const warga_1 = require("../controllers/warga");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.get('/', warga_1.getWarga);
+router.get('/:id', warga_1.getWargaById);
+router.post('/', (0, auth_1.authorize)(['ADMIN', 'RT', 'SEKRETARIS']), warga_1.createWarga);
+router.put('/:id', (0, auth_1.authorize)(['ADMIN', 'RT', 'SEKRETARIS']), warga_1.updateWarga);
+router.delete('/:id', (0, auth_1.authorize)(['ADMIN', 'RT', 'SEKRETARIS']), warga_1.deleteWarga);
+exports.default = router;

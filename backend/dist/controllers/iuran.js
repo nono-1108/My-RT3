@@ -1,0 +1,96 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.bayarTagihan = exports.generateTagihan = exports.getTagihan = void 0;
+const prisma_1 = __importDefault(require("../utils/prisma"));
+const getTagihan = async (req, res) => {
+    try {
+        const tagihan = await prisma_1.default.tagihaniuran.findMany({
+            include: {
+                warga: true
+            },
+            orderBy: [{ tahun: 'desc' }, { bulan: 'desc' }]
+        });
+        res.json({ success: true, data: tagihan });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+exports.getTagihan = getTagihan;
+const generateTagihan = async (req, res) => {
+    try {
+        const { bulan, tahun, nominal } = req.body;
+        // Get all active warga
+        const wargaAktif = await prisma_1.default.warga.findMany({
+            where: { status_aktif: 'AKTIF' }
+        });
+        const dataToInsert = wargaAktif.map(w => ({
+            bulan: Number(bulan),
+            tahun: Number(tahun),
+            wargaId: w.id,
+            nominal: nominal,
+            status: 'BELUM_LUNAS'
+        }));
+        // Create many tagihan ignoring duplicates is tricky in basic prisma without unique constraint, 
+        // so we'll just use createMany
+        const result = await prisma_1.default.tagihaniuran.createMany({
+            data: dataToInsert
+        });
+        res.status(201).json({ success: true, message: `${result.count} tagihan generated`, data: result });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+exports.generateTagihan = generateTagihan;
+const bayarTagihan = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { tanggal_bayar, metode_pembayaran } = req.body;
+        const tagihan = await prisma_1.default.tagihaniuran.findUnique({ where: { id }, include: { warga: true } });
+        if (!tagihan)
+            return res.status(404).json({ success: false, message: 'Tagihan not found' });
+        if (tagihan.status === 'LUNAS') {
+            return res.status(400).json({ success: false, message: 'Tagihan already paid' });
+        }
+        // Find Kategori Pemasukan for Iuran
+        let kategori = await prisma_1.default.kategoripemasukan.findFirst({ where: { nama: 'Iuran Bulanan' } });
+        if (!kategori) {
+            kategori = await prisma_1.default.kategoripemasukan.create({ data: { nama: 'Iuran Bulanan' } });
+        }
+        // Start transaction
+        const result = await prisma_1.default.$transaction(async (tx) => {
+            // Create Pemasukan
+            const pemasukan = await tx.pemasukan.create({
+                data: {
+                    no_transaksi: `TRX-${Date.now()}`,
+                    tanggal: new Date(tanggal_bayar),
+                    wargaId: tagihan.wargaId,
+                    kategoriId: kategori.id,
+                    nominal: tagihan.nominal,
+                    metode_pembayaran: metode_pembayaran || 'Tunai',
+                    keterangan: `Pembayaran Iuran Bulan ${tagihan.bulan} Tahun ${tagihan.tahun}`,
+                }
+            });
+            // Update Tagihan
+            const updatedTagihan = await tx.tagihaniuran.update({
+                where: { id },
+                data: {
+                    status: 'LUNAS',
+                    tanggal_bayar: new Date(tanggal_bayar),
+                    pemasukanId: pemasukan.id
+                }
+            });
+            return updatedTagihan;
+        });
+        res.json({ success: true, data: result });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+exports.bayarTagihan = bayarTagihan;

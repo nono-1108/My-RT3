@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const iuran_1 = require("../controllers/iuran");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.get('/', iuran_1.getTagihan);
+router.post('/generate', (0, auth_1.authorize)(['ADMIN', 'BENDAHARA']), iuran_1.generateTagihan);
+router.post('/:id/bayar', (0, auth_1.authorize)(['ADMIN', 'BENDAHARA']), iuran_1.bayarTagihan);
+exports.default = router;

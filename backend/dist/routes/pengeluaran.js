@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const pengeluaran_1 = require("../controllers/pengeluaran");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.get('/kategori', pengeluaran_1.getKategoriPengeluaran);
+router.post('/kategori', (0, auth_1.authorize)(['ADMIN', 'BENDAHARA']), pengeluaran_1.createKategoriPengeluaran);
+router.get('/', pengeluaran_1.getPengeluaran);
+router.post('/', (0, auth_1.authorize)(['ADMIN', 'BENDAHARA']), pengeluaran_1.createPengeluaran);
+router.put('/:id', (0, auth_1.authorize)(['ADMIN', 'BENDAHARA']), pengeluaran_1.updatePengeluaran);
+router.delete('/:id', (0, auth_1.authorize)(['ADMIN', 'BENDAHARA']), pengeluaran_1.deletePengeluaran);
+exports.default = router;

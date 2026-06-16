@@ -1,0 +1,28 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = __importDefault(require("./auth"));
+const warga_1 = __importDefault(require("./warga"));
+const pemasukan_1 = __importDefault(require("./pemasukan"));
+const pengeluaran_1 = __importDefault(require("./pengeluaran"));
+const dashboard_1 = __importDefault(require("./dashboard"));
+const iuran_1 = __importDefault(require("./iuran"));
+const laporan_1 = __importDefault(require("./laporan"));
+const saldoAwal_1 = __importDefault(require("./saldoAwal"));
+const users_1 = __importDefault(require("./users"));
+const kategori_1 = __importDefault(require("./kategori"));
+const router = (0, express_1.Router)();
+router.use('/auth', auth_1.default);
+router.use('/warga', warga_1.default);
+router.use('/pemasukan', pemasukan_1.default);
+router.use('/pengeluaran', pengeluaran_1.default);
+router.use('/dashboard', dashboard_1.default);
+router.use('/iuran', iuran_1.default);
+router.use('/laporan', laporan_1.default);
+router.use('/saldo-awal', saldoAwal_1.default);
+router.use('/users', users_1.default);
+router.use('/kategori', kategori_1.default);
+exports.default = router;
