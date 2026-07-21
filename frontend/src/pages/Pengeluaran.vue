@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { Search, Plus, Edit2, Trash2 } from '@lucide/vue';
+import { Search, Plus, Edit2, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from '@lucide/vue';
 import api from '../services/api';
 import Modal from '../components/Modal.vue';
 
@@ -8,6 +8,8 @@ const dataList = ref<any[]>([]);
 const loading = ref(true);
 const searchTerm = ref('');
 const filterBulan = ref('');
+const sortKey = ref('tanggal');
+const sortOrder = ref('desc');
 
 const kategoriList = ref<any[]>([]);
 const isModalOpen = ref(false);
@@ -170,7 +172,7 @@ const formatDate = (dateString: string) => {
 
 const filteredData = computed(() => {
   const term = searchTerm.value.toLowerCase();
-  return dataList.value.filter(d => {
+  let result = dataList.value.filter(d => {
     const matchTerm = (d.deskripsi || '').toLowerCase().includes(term) ||
                       (d.no_pengeluaran || '').toLowerCase().includes(term);
     let matchBulan = true;
@@ -181,7 +183,36 @@ const filteredData = computed(() => {
     }
     return matchTerm && matchBulan;
   });
+
+  result.sort((a, b) => {
+    let valA = a[sortKey.value];
+    let valB = b[sortKey.value];
+
+    // Handle null or undefined values
+    if (valA == null) valA = '';
+    if (valB == null) valB = '';
+
+    if (typeof valA === 'string' && typeof valB === 'string') {
+        valA = valA.toLowerCase();
+        valB = valB.toLowerCase();
+    }
+
+    if (valA < valB) return sortOrder.value === 'asc' ? -1 : 1;
+    if (valA > valB) return sortOrder.value === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  return result;
 });
+
+const handleSort = (key: string) => {
+  if (sortKey.value === key) {
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortKey.value = key;
+    sortOrder.value = 'asc';
+  }
+};
 
 const openModalForAdd = () => {
   resetForm();
@@ -234,11 +265,46 @@ const openModalForAdd = () => {
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase tracking-wider">
-              <th class="px-6 py-4 font-medium">No. Pengeluaran</th>
-              <th class="px-6 py-4 font-medium">Tanggal</th>
-              <th class="px-6 py-4 font-medium">Penerima</th>
-              <th class="px-6 py-4 font-medium">Deskripsi</th>
-              <th class="px-6 py-4 font-medium text-right">Nominal</th>
+              <th class="px-6 py-4 font-medium cursor-pointer hover:bg-slate-100 transition-colors select-none" @click="handleSort('no_pengeluaran')">
+                <div class="flex items-center space-x-1">
+                  <span>No. Pengeluaran</span>
+                  <ArrowUp v-if="sortKey === 'no_pengeluaran' && sortOrder === 'asc'" :size="14" class="text-orange-600" />
+                  <ArrowDown v-else-if="sortKey === 'no_pengeluaran' && sortOrder === 'desc'" :size="14" class="text-orange-600" />
+                  <ArrowUpDown v-else :size="14" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="px-6 py-4 font-medium cursor-pointer hover:bg-slate-100 transition-colors select-none" @click="handleSort('tanggal')">
+                <div class="flex items-center space-x-1">
+                  <span>Tanggal</span>
+                  <ArrowUp v-if="sortKey === 'tanggal' && sortOrder === 'asc'" :size="14" class="text-orange-600" />
+                  <ArrowDown v-else-if="sortKey === 'tanggal' && sortOrder === 'desc'" :size="14" class="text-orange-600" />
+                  <ArrowUpDown v-else :size="14" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="px-6 py-4 font-medium cursor-pointer hover:bg-slate-100 transition-colors select-none" @click="handleSort('penerima')">
+                <div class="flex items-center space-x-1">
+                  <span>Penerima</span>
+                  <ArrowUp v-if="sortKey === 'penerima' && sortOrder === 'asc'" :size="14" class="text-orange-600" />
+                  <ArrowDown v-else-if="sortKey === 'penerima' && sortOrder === 'desc'" :size="14" class="text-orange-600" />
+                  <ArrowUpDown v-else :size="14" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="px-6 py-4 font-medium cursor-pointer hover:bg-slate-100 transition-colors select-none" @click="handleSort('deskripsi')">
+                <div class="flex items-center space-x-1">
+                  <span>Deskripsi</span>
+                  <ArrowUp v-if="sortKey === 'deskripsi' && sortOrder === 'asc'" :size="14" class="text-orange-600" />
+                  <ArrowDown v-else-if="sortKey === 'deskripsi' && sortOrder === 'desc'" :size="14" class="text-orange-600" />
+                  <ArrowUpDown v-else :size="14" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="px-6 py-4 font-medium cursor-pointer hover:bg-slate-100 transition-colors select-none" @click="handleSort('nominal')">
+                <div class="flex items-center justify-end space-x-1">
+                  <span>Nominal</span>
+                  <ArrowUp v-if="sortKey === 'nominal' && sortOrder === 'asc'" :size="14" class="text-orange-600" />
+                  <ArrowDown v-else-if="sortKey === 'nominal' && sortOrder === 'desc'" :size="14" class="text-orange-600" />
+                  <ArrowUpDown v-else :size="14" class="text-slate-400" />
+                </div>
+              </th>
               <th class="px-6 py-4 font-medium text-right">Aksi</th>
             </tr>
           </thead>

@@ -12,27 +12,19 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
-  backend:
+  app:
     build:
-      context: ./backend
+      context: .
+      dockerfile: ./backend/Dockerfile
     restart: always
     environment:
       DATABASE_URL: "mysql://root:password@db:3306/rt_finance"
       JWT_SECRET: "sangat-rahasia"
-      PORT: 5000
+      PORT: 5005
     ports:
-      - "5000:5000"
+      - "5005:5005"
     depends_on:
       - db
-
-  frontend:
-    build:
-      context: ./frontend
-    restart: always
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
 
 volumes:
   db_data:

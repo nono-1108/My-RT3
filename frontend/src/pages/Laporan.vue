@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import { Download, Calendar, BarChart3, TrendingUp, TrendingDown } from '@lucide/vue';
-import api from '../services/api';
+import api, { getBaseUrl } from '../services/api';
 
 const activeTab = ref<'kumulatif' | 'bulanan'>('kumulatif');
 const loading = ref(false);
@@ -62,7 +62,7 @@ import { useAuthStore } from '../store/authStore';
 const handleExport = (format: 'pdf' | 'excel') => {
   try {
     const authStore = useAuthStore();
-    const baseURL = api.defaults.baseURL || 'http://localhost:5000/api';
+    const baseURL = api.defaults.baseURL || getBaseUrl();
     let exportUrl = `${baseURL}/laporan/${format}`;
     
     const params = new URLSearchParams();

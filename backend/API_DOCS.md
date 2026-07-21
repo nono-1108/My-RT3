@@ -1,6 +1,6 @@
 # Dokumentasi API - Sistem Informasi Keuangan RT
 
-Base URL: `http://localhost:5000/api`
+Base URL: 'http://10.139.100.15:5005/api'
 
 ## Autentikasi (`/auth`)
 - `POST /auth/login`

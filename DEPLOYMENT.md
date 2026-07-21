@@ -80,15 +80,7 @@ server {
     server_name keuangan-rt.com www.keuangan-rt.com;
 
     location / {
-        proxy_pass http://localhost:80; # Port frontend Docker
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /api {
-        proxy_pass http://localhost:5000; # Port backend Docker
+        proxy_pass http://localhost:5005; # Port Unified App (Express menyajikan Frontend + Backend)
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

@@ -29,7 +29,7 @@ const handleLogin = async () => {
     }
   } catch (err: any) {
     if (err.message === 'Network Error') {
-      error.value = 'Tidak dapat terhubung ke server. Pastikan backend berjalan (port 5000).';
+      error.value = 'Tidak dapat terhubung ke server. Pastikan backend berjalan (port 5005).';
     } else {
       error.value = err.response?.data?.message || 'Terjadi kesalahan pada server';
     }
