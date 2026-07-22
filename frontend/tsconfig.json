@@ -3,9 +3,8 @@
     "allowJs": true,
     "checkJs": false,
     "module": "ESNext",
-    "moduleResolution": "node",
-    "target": "ES2022",
-    "jsx": "preserve"
+    "moduleResolution": "bundler",
+    "target": "ES2022"
   },
   "include": ["src/**/*", "*.js", "*.vue"],
   "exclude": ["node_modules", "dist"]
