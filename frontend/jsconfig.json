@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": false,
     "module": "ESNext",
     "moduleResolution": "node",
     "target": "ES2022",
+    "checkJs": false,
     "jsx": "preserve"
   },
   "include": ["src/**/*", "*.js", "*.vue"],
