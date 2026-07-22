@@ -1,5 +1,1 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
-
-export default prisma
+// Obsolete file - migrated to JS

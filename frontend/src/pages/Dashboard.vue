@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted } from 'vue';
 import { 
   Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, 
@@ -6,13 +6,13 @@ import {
 } from 'chart.js';
 import { Line, Bar } from 'vue-chartjs';
 import { TrendingUp, TrendingDown, Users, AlertCircle, ArrowUpRight } from '@lucide/vue';
-import api from '../services/api';
+import api from '../services/api.js';
 
 ChartJS.register(
   CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend
 );
 
-const stats = ref<any>(null);
+const stats = ref(null);
 const loading = ref(true);
 
 onMounted(async () => {
@@ -36,7 +36,7 @@ onMounted(async () => {
   }
 });
 
-const formatRupiah = (angka: number) => {
+const formatRupiah = (angka) => {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka);
 };
 
@@ -91,11 +91,11 @@ const chartOptions = {
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      position: 'top' as const,
+      position: 'top',
     },
     tooltip: {
       callbacks: {
-        label: function(context: any) {
+        label: function(context) {
           let label = context.dataset.label || '';
           if (label) {
             label += ': ';
@@ -111,7 +111,7 @@ const chartOptions = {
   scales: {
     y: {
       ticks: {
-        callback: function(value: any) {
+        callback: function(value) {
           return 'Rp' + (value / 1000000) + 'M';
         }
       }

@@ -1,10 +1,10 @@
-<script setup lang="ts">
+<script setup>
 import { ref, computed, onMounted } from 'vue';
 import { Search, Settings2, CheckCircle2 } from '@lucide/vue';
-import api from '../services/api';
+import api from '../services/api.js';
 import Modal from '../components/Modal.vue';
 
-const dataList = ref<any[]>([]);
+const dataList = ref([]);
 const loading = ref(true);
 const searchTerm = ref('');
 
@@ -16,7 +16,7 @@ const generateData = ref({
 });
 
 const payModalOpen = ref(false);
-const selectedIuran = ref<any>(null);
+const selectedIuran = ref(null);
 const payData = ref({
   tanggal_bayar: new Date().toISOString().split('T')[0],
   metode_pembayaran: 'Tunai'
@@ -77,11 +77,11 @@ const handlePay = async () => {
   }
 };
 
-const formatRupiah = (angka: any) => {
+const formatRupiah = (angka) => {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(angka));
 };
 
-const getBulanNama = (bulan: number) => {
+const getBulanNama = (bulan) => {
   const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
   return months[bulan - 1] || bulan.toString();
 };
@@ -93,7 +93,7 @@ const filteredData = computed(() => {
   );
 });
 
-const openPayModal = (item: any) => {
+const openPayModal = (item) => {
   selectedIuran.value = item;
   payModalOpen.value = true;
 };

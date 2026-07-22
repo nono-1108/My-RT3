@@ -1,14 +1,12 @@
-<script setup lang="ts">
+<script setup>
 import { X } from '@lucide/vue';
 
-defineProps<{
-  isOpen: boolean;
-  title: string;
-}>();
+defineProps({
+  isOpen: Boolean,
+  title: String
+});
 
-defineEmits<{
-  (e: 'close'): void;
-}>();
+defineEmits(['close']);
 </script>
 
 <template>

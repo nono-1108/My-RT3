@@ -1,14 +1,14 @@
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted } from 'vue';
 import { Edit2, Shield, User } from '@lucide/vue';
-import api from '../services/api';
+import api from '../services/api.js';
 import Modal from '../components/Modal.vue';
 
-const users = ref<any[]>([]);
+const users = ref([]);
 const loading = ref(true);
 
 const isModalOpen = ref(false);
-const editingUser = ref<any>(null);
+const editingUser = ref(null);
 const isSubmitting = ref(false);
 
 const formData = ref({
@@ -36,11 +36,11 @@ onMounted(() => {
   fetchUsers();
 });
 
-const formatRole = (role: string) => {
+const formatRole = (role) => {
   return role.replace('_', ' ');
 };
 
-const handleEdit = (user: any) => {
+const handleEdit = (user) => {
   editingUser.value = user;
   formData.value = {
     nama: user.nama || '',
@@ -54,7 +54,7 @@ const handleEdit = (user: any) => {
 const handleSubmit = async () => {
   isSubmitting.value = true;
   try {
-    const payload: any = { 
+    const payload = { 
       nama: formData.value.nama,
       role: formData.value.role,
       access_level: formData.value.access_level
@@ -68,7 +68,7 @@ const handleSubmit = async () => {
     
     isModalOpen.value = false;
     fetchUsers();
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to update user", error);
     alert(`Gagal menyimpan: ${error.response?.data?.message || error.message}`);
   } finally {

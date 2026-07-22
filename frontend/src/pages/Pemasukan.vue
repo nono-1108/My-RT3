@@ -1,17 +1,17 @@
-<script setup lang="ts">
+<script setup>
 import { ref, computed, onMounted } from 'vue';
 import { Search, Plus, Edit2, Trash2 } from '@lucide/vue';
-import api from '../services/api';
+import api from '../services/api.js';
 import Modal from '../components/Modal.vue';
 
-const dataList = ref<any[]>([]);
+const dataList = ref([]);
 const loading = ref(true);
 const searchTerm = ref('');
 const filterBulan = ref('');
 
-const kategoriList = ref<any[]>([]);
+const kategoriList = ref([]);
 const isModalOpen = ref(false);
-const editingId = ref<string | null>(null);
+const editingId = ref(null);
 const isSubmitting = ref(false);
 
 const formData = ref({
@@ -56,7 +56,7 @@ const resetForm = () => {
   };
 };
 
-const formatRupiahInput = (value: string) => {
+const formatRupiahInput = (value) => {
   const numberString = value.replace(/[^,\d]/g, '').toString();
   const split = numberString.split(',');
   const sisa = split[0].length % 3;
@@ -72,8 +72,8 @@ const formatRupiahInput = (value: string) => {
   return rupiah;
 };
 
-const handleNominalChange = (e: Event) => {
-  const target = e.target as HTMLInputElement;
+const handleNominalChange = (e) => {
+  const target = e.target;
   const formatted = formatRupiahInput(target.value);
   formData.value.nominal = formatted;
 };
@@ -125,7 +125,7 @@ const handleSubmit = async () => {
     isModalOpen.value = false;
     resetForm();
     fetchData();
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to submit", error);
     alert(`Gagal menyimpan pemasukan: ${error.response?.data?.message || error.message}`);
   } finally {
@@ -133,7 +133,7 @@ const handleSubmit = async () => {
   }
 };
 
-const handleEdit = (item: any) => {
+const handleEdit = (item) => {
   editingId.value = item.id;
   formData.value = {
     tanggal: item.tanggal ? item.tanggal.split('T')[0] : new Date().toISOString().split('T')[0],
@@ -144,23 +144,23 @@ const handleEdit = (item: any) => {
   isModalOpen.value = true;
 };
 
-const handleDelete = async (id: string, no_transaksi: string) => {
+const handleDelete = async (id, no_transaksi) => {
   if (window.confirm(`Apakah Anda yakin ingin menghapus data pemasukan ${no_transaksi}?`)) {
     try {
       await api.delete(`/pemasukan/${id}`);
       fetchData();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Failed to delete", error);
       alert(`Gagal menghapus pemasukan: ${error.response?.data?.message || error.message}`);
     }
   }
 };
 
-const formatRupiah = (angka: any) => {
+const formatRupiah = (angka) => {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(angka));
 };
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString) => {
   if (!dateString) return '-';
   return new Date(dateString).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 };

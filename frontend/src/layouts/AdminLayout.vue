@@ -1,25 +1,11 @@
-<script setup lang="ts">
+<script setup>
 import { ref, computed } from 'vue';
-import type { Component } from 'vue';
 import { RouterView, RouterLink, useRouter, useRoute } from 'vue-router';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '../store/authStore.js';
 import { 
   LayoutGrid, Users, CreditCard, Receipt, 
   FileText, LogOut, Menu, Bell, Wallet, Database, ChevronDown, ChevronUp, Circle, Mail
 } from '@lucide/vue';
-
-interface NavChild {
-  name: string;
-  path: string;
-}
-
-interface NavItem {
-  name: string;
-  path?: string;
-  icon: Component;
-  isParent?: boolean;
-  children?: NavChild[];
-}
 
 const sidebarOpen = ref(true);
 const masterDataOpen = ref(false);
@@ -35,20 +21,20 @@ const handleLogout = () => {
   router.push('/login');
 };
 
-const filteredNavItems = computed<NavItem[]>(() => {
+const filteredNavItems = computed(() => {
   const currentRole = user.value?.role || 'ADMIN';
   const accessLevel = user.value?.access_level || 'WRITE';
   
   if (currentRole === 'KETUA_RT' || accessLevel === 'READ') {
     return [
-      { name: 'Laporan', path: '/laporan', icon: FileText as Component },
+      { name: 'Laporan', path: '/laporan', icon: FileText },
     ];
   } else if (currentRole === 'ADMIN') {
     return [
-      { name: 'Dashboard', path: '/', icon: LayoutGrid as Component },
+      { name: 'Dashboard', path: '/', icon: LayoutGrid },
       { 
         name: 'Master Data', 
-        icon: Database as Component, 
+        icon: Database, 
         isParent: true,
         children: [
           { name: 'Kategori Transaksi', path: '/master/kategori' },
@@ -57,23 +43,23 @@ const filteredNavItems = computed<NavItem[]>(() => {
           { name: 'Pengaturan RT', path: '/master/pengaturan' },
         ]
       },
-      { name: 'Data Warga', path: '/warga', icon: Users as Component },
-      { name: 'Surat Pengantar', path: '/surat-pengantar', icon: Mail as Component },
-      { name: 'Pemasukan', path: '/pemasukan', icon: Wallet as Component },
-      { name: 'Pengeluaran', path: '/pengeluaran', icon: CreditCard as Component },
-      { name: 'Iuran Warga', path: '/iuran', icon: Receipt as Component },
-      { name: 'Laporan', path: '/laporan', icon: FileText as Component },
+      { name: 'Data Warga', path: '/warga', icon: Users },
+      { name: 'Surat Pengantar', path: '/surat-pengantar', icon: Mail },
+      { name: 'Pemasukan', path: '/pemasukan', icon: Wallet },
+      { name: 'Pengeluaran', path: '/pengeluaran', icon: CreditCard },
+      { name: 'Iuran Warga', path: '/iuran', icon: Receipt },
+      { name: 'Laporan', path: '/laporan', icon: FileText },
     ];
   } else if (currentRole === 'BENDAHARA_RT') {
     return [
-      { name: 'Dashboard', path: '/', icon: LayoutGrid as Component },
-      { name: 'Pemasukan', path: '/pemasukan', icon: Wallet as Component },
-      { name: 'Pengeluaran', path: '/pengeluaran', icon: CreditCard as Component },
-      { name: 'Iuran Warga', path: '/iuran', icon: Receipt as Component },
-      { name: 'Laporan', path: '/laporan', icon: FileText as Component },
+      { name: 'Dashboard', path: '/', icon: LayoutGrid },
+      { name: 'Pemasukan', path: '/pemasukan', icon: Wallet },
+      { name: 'Pengeluaran', path: '/pengeluaran', icon: CreditCard },
+      { name: 'Iuran Warga', path: '/iuran', icon: Receipt },
+      { name: 'Laporan', path: '/laporan', icon: FileText },
       { 
         name: 'Master Data', 
-        icon: Database as Component, 
+        icon: Database, 
         isParent: true,
         children: [
           { name: 'Kategori Transaksi', path: '/master/kategori' },
@@ -83,12 +69,12 @@ const filteredNavItems = computed<NavItem[]>(() => {
     ];
   } else if (currentRole === 'SEKRETARIS_RT') {
     return [
-      { name: 'Dashboard', path: '/', icon: LayoutGrid as Component },
-      { name: 'Data Warga', path: '/warga', icon: Users as Component },
-      { name: 'Surat Pengantar', path: '/surat-pengantar', icon: Mail as Component },
+      { name: 'Dashboard', path: '/', icon: LayoutGrid },
+      { name: 'Data Warga', path: '/warga', icon: Users },
+      { name: 'Surat Pengantar', path: '/surat-pengantar', icon: Mail },
       { 
         name: 'Master Data', 
-        icon: Database as Component, 
+        icon: Database, 
         isParent: true,
         children: [
           { name: 'Data Pengurus', path: '/master/pengurus' },
@@ -100,17 +86,17 @@ const filteredNavItems = computed<NavItem[]>(() => {
 
   // Fallback
   return [
-    { name: 'Dashboard', path: '/', icon: LayoutGrid as Component }
+    { name: 'Dashboard', path: '/', icon: LayoutGrid }
   ];
 });
 
-const isPathActive = (path: string | undefined) => {
+const isPathActive = (path) => {
   if (!path) return false;
   if (path === '/') return route.path === '/';
   return route.path.startsWith(path);
 };
 
-const isChildActive = (children: NavChild[] | undefined) => {
+const isChildActive = (children) => {
   if (!children) return false;
   return children.some(child => route.path.startsWith(child.path));
 };

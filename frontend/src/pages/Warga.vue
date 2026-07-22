@@ -1,15 +1,15 @@
-<script setup lang="ts">
+<script setup>
 import { ref, computed, onMounted } from 'vue';
 import { Search, Plus, Edit2, Trash2, Download } from '@lucide/vue';
-import api from '../services/api';
+import api from '../services/api.js';
 import Modal from '../components/Modal.vue';
 
-const wargaList = ref<any[]>([]);
+const wargaList = ref([]);
 const loading = ref(true);
 const searchTerm = ref('');
 
 const isModalOpen = ref(false);
-const editingId = ref<string | null>(null);
+const editingId = ref(null);
 const isSubmitting = ref(false);
 
 const formData = ref({
@@ -70,7 +70,7 @@ const handleSubmit = async () => {
     isModalOpen.value = false;
     resetForm();
     fetchWarga();
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to submit", error);
     alert(`Gagal menyimpan warga: ${error.response?.data?.message || error.message}`);
   } finally {
@@ -78,7 +78,7 @@ const handleSubmit = async () => {
   }
 };
 
-const handleEdit = (warga: any) => {
+const handleEdit = (warga) => {
   editingId.value = warga.id;
   formData.value = {
     nik: warga.nik || '',
@@ -94,12 +94,12 @@ const handleEdit = (warga: any) => {
   isModalOpen.value = true;
 };
 
-const handleDelete = async (id: string, nama: string) => {
+const handleDelete = async (id, nama) => {
   if (window.confirm(`Apakah Anda yakin ingin menghapus data warga ${nama}?`)) {
     try {
       await api.delete(`/warga/${id}`);
       fetchWarga();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Failed to delete", error);
       alert(`Gagal menghapus warga: ${error.response?.data?.message || error.message}`);
     }

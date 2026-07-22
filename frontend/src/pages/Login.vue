@@ -1,8 +1,8 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '../store/authStore';
-import api from '../services/api';
+import { useAuthStore } from '../store/authStore.js';
+import api from '../services/api.js';
 import { Wallet, Lock, User } from '@lucide/vue';
 
 const username = ref('');
@@ -27,7 +27,7 @@ const handleLogin = async () => {
       authStore.setAuth(response.data.data.token, response.data.data.user);
       router.push('/');
     }
-  } catch (err: any) {
+  } catch (err) {
     if (err.message === 'Network Error') {
       error.value = 'Tidak dapat terhubung ke server. Pastikan backend berjalan (port 5005).';
     } else {

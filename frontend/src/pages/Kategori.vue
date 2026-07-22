@@ -1,11 +1,11 @@
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted } from 'vue';
 import { Plus, Edit2, Trash2 } from '@lucide/vue';
-import api from '../services/api';
+import api from '../services/api.js';
 import Modal from '../components/Modal.vue';
 
-const kategoriPemasukan = ref<any[]>([]);
-const kategoriPengeluaran = ref<any[]>([]);
+const kategoriPemasukan = ref([]);
+const kategoriPengeluaran = ref([]);
 const loading = ref(true);
 
 const fetchKategori = async () => {
@@ -34,7 +34,7 @@ onMounted(() => {
 
 // Modal state
 const isModalOpen = ref(false);
-const modalType = ref<'pemasukan' | 'pengeluaran'>('pemasukan');
+const modalType = ref('pemasukan');
 const isEditing = ref(false);
 const editingId = ref('');
 const formData = ref({
@@ -43,7 +43,7 @@ const formData = ref({
 });
 const isSubmitting = ref(false);
 
-const openModal = (type: 'pemasukan' | 'pengeluaran', editData?: any) => {
+const openModal = (type, editData) => {
   modalType.value = type;
   if (editData) {
     isEditing.value = true;
@@ -71,19 +71,19 @@ const handleSubmit = async () => {
     }
     isModalOpen.value = false;
     fetchKategori();
-  } catch (error: any) {
+  } catch (error) {
     alert(`Gagal menyimpan: ${error.response?.data?.message || error.message}`);
   } finally {
     isSubmitting.value = false;
   }
 };
 
-const handleDelete = async (type: 'pemasukan' | 'pengeluaran', id: string) => {
+const handleDelete = async (type, id) => {
   if (!confirm('Apakah Anda yakin ingin menghapus kategori ini?')) return;
   try {
     await api.delete(`/kategori/${type}/${id}`);
     fetchKategori();
-  } catch (error: any) {
+  } catch (error) {
     alert(`Gagal menghapus: ${error.response?.data?.message || error.message}`);
   }
 };

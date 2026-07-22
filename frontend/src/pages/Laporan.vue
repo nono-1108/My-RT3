@@ -1,13 +1,13 @@
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted, watch } from 'vue';
 import { Download, Calendar, BarChart3, TrendingUp, TrendingDown } from '@lucide/vue';
-import api, { getBaseUrl } from '../services/api';
+import api, { getBaseUrl } from '../services/api.js';
 
-const activeTab = ref<'kumulatif' | 'bulanan'>('kumulatif');
+const activeTab = ref('kumulatif');
 const loading = ref(false);
 
-const kumulatifData = ref<any[]>([]);
-const bulananData = ref<any>(null);
+const kumulatifData = ref([]);
+const bulananData = ref(null);
 
 const today = new Date();
 const defaultPeriod = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
@@ -57,9 +57,9 @@ onMounted(() => {
   }
 });
 
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '../store/authStore.js';
 
-const handleExport = (format: 'pdf' | 'excel') => {
+const handleExport = (format) => {
   try {
     const authStore = useAuthStore();
     const baseURL = api.defaults.baseURL || getBaseUrl();
@@ -80,11 +80,11 @@ const handleExport = (format: 'pdf' | 'excel') => {
   }
 };
 
-const formatRupiah = (angka: number) => {
+const formatRupiah = (angka) => {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka);
 };
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 };
 
@@ -207,7 +207,7 @@ const monthOptions = generateMonthOptions();
               <h3 class="text-sm font-medium text-slate-600">Total Pemasukan</h3>
             </div>
             <p class="text-2xl font-bold text-green-600">
-              {{ formatRupiah(bulananData.recap.pemasukan.reduce((acc: number, cur: any) => acc + cur.total, 0)) }}
+              {{ formatRupiah(bulananData.recap.pemasukan.reduce((acc, cur) => acc + cur.total, 0)) }}
             </p>
           </div>
           <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
@@ -216,7 +216,7 @@ const monthOptions = generateMonthOptions();
               <h3 class="text-sm font-medium text-slate-600">Total Pengeluaran</h3>
             </div>
             <p class="text-2xl font-bold text-red-500">
-              {{ formatRupiah(bulananData.recap.pengeluaran.reduce((acc: number, cur: any) => acc + cur.total, 0)) }}
+              {{ formatRupiah(bulananData.recap.pengeluaran.reduce((acc, cur) => acc + cur.total, 0)) }}
             </p>
           </div>
         </div>
@@ -261,8 +261,8 @@ const monthOptions = generateMonthOptions();
                   <td colspan="2" class="px-6 py-4 text-right text-primary-700 text-lg">
                     {{ formatRupiah(
                       bulananData.saldoAwal + 
-                      bulananData.recap.pemasukan.reduce((acc: number, cur: any) => acc + cur.total, 0) - 
-                      bulananData.recap.pengeluaran.reduce((acc: number, cur: any) => acc + cur.total, 0)
+                      bulananData.recap.pemasukan.reduce((acc, cur) => acc + cur.total, 0) - 
+                      bulananData.recap.pengeluaran.reduce((acc, cur) => acc + cur.total, 0)
                     ) }}
                   </td>
                 </tr>
