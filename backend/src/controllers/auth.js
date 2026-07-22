@@ -43,7 +43,11 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ success: false, message: 'Server error: ' + error.message });
+    let msg = 'Terjadi kesalahan pada server: ' + (error.message || 'Unknown error');
+    if (error.code === 'P1001' || error.message?.includes("Can't reach database server") || error.message?.includes("ECONNREFUSED") || error.message?.includes("Access denied") || error.message?.includes("connect")) {
+      msg = 'Koneksi database (MySQL) gagal diakses. Pastikan service MySQL sedang berjalan (di localhost:3306) dan DATABASE_URL di backend/.env sudah sesuai.';
+    }
+    res.status(500).json({ success: false, message: msg });
   }
 };
 

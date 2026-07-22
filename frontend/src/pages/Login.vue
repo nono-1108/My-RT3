@@ -28,8 +28,10 @@ const handleLogin = async () => {
       router.push('/');
     }
   } catch (err) {
-    if (err.message === 'Network Error') {
-      error.value = 'Tidak dapat terhubung ke server. Pastikan backend berjalan (port 5005).';
+    if (err.message === 'Network Error' || err.code === 'ERR_NETWORK' || !err.response) {
+      error.value = 'Tidak dapat terhubung ke server backend. Pastikan server backend berjalan di port 5005.';
+    } else if (err.response?.status === 502 || err.response?.status === 503 || err.response?.status === 504) {
+      error.value = 'Gagal terhubung ke server backend (Error ' + err.response.status + '). Pastikan service backend di port 5005 dan koneksi database sedang aktif.';
     } else {
       error.value = err.response?.data?.message || 'Terjadi kesalahan pada server';
     }

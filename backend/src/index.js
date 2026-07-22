@@ -5,8 +5,8 @@ dotenv.config()
 
 const PORT = process.env.PORT || 5005
 
-const server = app.listen(PORT, () => {
-  console.log(`[Backend] Server successfully started and running on port ${PORT}`)
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`[Backend] Server successfully started and running on http://127.0.0.1:${PORT}`)
 })
 
 server.on('error', (err) => {
@@ -17,4 +17,12 @@ server.on('error', (err) => {
   } else {
     console.error(`[Error] Gagal menjalankan server:`, err)
   }
+})
+
+process.on('uncaughtException', (err) => {
+  console.error('[Backend Uncaught Exception]:', err)
+})
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[Backend Unhandled Rejection]:', reason)
 })

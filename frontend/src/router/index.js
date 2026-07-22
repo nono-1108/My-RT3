@@ -44,15 +44,14 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach((to, _from) => {
   const authStore = useAuthStore();
   if (to.meta.requiresAuth && !authStore.token) {
-    next('/login');
+    return '/login';
   } else if (authStore.token && (authStore.user?.role === 'KETUA_RT' || authStore.user?.access_level === 'READ') && to.path !== '/laporan') {
-    next('/laporan');
-  } else {
-    next();
+    return '/laporan';
   }
+  return true;
 });
 
 export default router;

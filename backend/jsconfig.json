@@ -3,7 +3,12 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "target": "ES2022",
-    "checkJs": false
+    "checkJs": false,
+    "skipLibCheck": true,
+    "types": []
+  },
+  "typeAcquisition": {
+    "enable": false
   },
   "include": ["src/**/*", "*.js"],
   "exclude": ["node_modules", "dist"]
